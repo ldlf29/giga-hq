@@ -106,27 +106,27 @@ export default async function handler(req, res) {
 
       let raceId, creator, fieldSize, trackLength, entryFee, seedPool;
       try {
-        // topics[1] = raceId, topics[2] = creator
+        // topics[1] = raceId, topics[2] = creator, topics[3] = entryFee (indexed)
         raceId = BigInt(log.topics[1] || 0);
         creator = '0x' + (log.topics[2] || '').slice(-40); // Convert padded bytes32 to address
+        entryFee = log.topics[3] ? BigInt(log.topics[3]) : 0n;
 
-        // Decode data manually since it's 128 bytes (4 uint256s) instead of the expected 5
+        // Decode data manually since it's 128 bytes (4 uint256s: fieldSize, trackLength, seedPool, creatorFeeBps)
         const decodedData = decodeAbiParameters(
           [
             { type: 'uint256', name: 'fieldSize' },
             { type: 'uint256', name: 'trackLength' },
-            { type: 'uint256', name: 'entryFee' },
-            { type: 'uint256', name: 'creatorFeeBps' }, // assuming seedPool was omitted in data
+            { type: 'uint256', name: 'seedPool' },
+            { type: 'uint256', name: 'creatorFeeBps' },
           ],
           log.data
         );
         
         fieldSize = decodedData[0];
         trackLength = decodedData[1];
-        entryFee = decodedData[2];
-        seedPool = 0n; // default to 0 since it's missing from data
+        seedPool = decodedData[2];
         
-        console.log(`[ALCHEMY] Decoded manually. raceId: ${raceId}, creator: ${creator}, fieldSize: ${fieldSize}, trackLength: ${trackLength}, entryFee: ${entryFee}`);
+        console.log(`[ALCHEMY] Decoded manually. raceId: ${raceId}, creator: ${creator}, fieldSize: ${fieldSize}, trackLength: ${trackLength}, entryFee: ${entryFee}, seedPool: ${seedPool}`);
       } catch (err) {
         console.error('[ALCHEMY] Failed to decode log manually:', err);
         continue;
