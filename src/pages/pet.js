@@ -112,8 +112,8 @@ export async function renderPet(container, petId) {
       
       <div class="grid-2" style="margin-bottom: 32px; align-items: start;">
         <!-- Left Side: Collectible Digital Card -->
-        <a href="https://opensea.io/item/abstract/0xd320831c876190c7ef79376ffcc889756f038e04/${pet.id}" target="_blank" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-          <div class="gigling-card-container">
+        <div class="gigling-card-container">
+          <a href="https://opensea.io/item/abstract/0xd320831c876190c7ef79376ffcc889756f038e04/${pet.id}" target="_blank" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
             <div class="gigling-card ${cardGlowClass}">
               <div class="gigling-card-header">
               <span class="gigling-card-title">#${pet.id}</span>
@@ -150,7 +150,8 @@ export async function renderPet(container, petId) {
               </div>
             </div>
           </div>
-        </a>
+          </a>
+        </div>
 
         <!-- Right Side: Analytics, Stats, Performance Trend -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
