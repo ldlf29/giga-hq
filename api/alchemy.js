@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'crypto';
 import { decodeEventLog } from 'viem';
 import { Redis } from '@upstash/redis';
 
@@ -5,6 +6,33 @@ const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
+
+// Disable Vercel's automatic body parsing so we can read the raw body for HMAC verification
+export const config = {
+  api: { bodyParser: false },
+};
+
+/** Reads the raw request body as a Buffer */
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
+/** Verifies the x-alchemy-signature header against the raw body */
+function verifyAlchemySignature(rawBody, signature, signingKey) {
+  const hmac = createHmac('sha256', signingKey);
+  hmac.update(rawBody, 'utf8');
+  const digest = hmac.digest('hex');
+  try {
+    return timingSafeEqual(Buffer.from(digest), Buffer.from(signature));
+  } catch {
+    return false;
+  }
+}
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -33,8 +61,31 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // --- Signature verification ---
+  const signingKey = process.env.ALCHEMY_WEBHOOK_SECRET;
+  if (!signingKey) {
+    console.error('ALCHEMY_WEBHOOK_SECRET not set');
+    return res.status(500).json({ error: 'Server misconfiguration' });
+  }
+
+  const rawBody = await getRawBody(req);
+  const signature = req.headers['x-alchemy-signature'];
+
+  if (!signature || !verifyAlchemySignature(rawBody, signature, signingKey)) {
+    console.warn('Invalid Alchemy signature');
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  // Parse JSON manually since bodyParser is disabled
+  let body;
   try {
-    const logs = req.body?.event?.data?.block?.logs || [];
+    body = JSON.parse(rawBody.toString('utf8'));
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
+
+  try {
+    const logs = body?.event?.data?.block?.logs || [];
 
     for (const log of logs) {
       // Filter: only RaceCreated events
