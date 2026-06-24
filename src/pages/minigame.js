@@ -5,11 +5,14 @@ export async function renderMinigame(container) {
     <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
       <!-- Header -->
       <div style="display: flex; align-items: center; gap: 16px; width: 100%; max-width: 900px; justify-content: space-between;">
-        <h1 class="pixel-text" style="font-size: 28px; color: #ffffff; margin: 0;">GIGLING RUNNER</h1>
         <div style="display: flex; align-items: center; gap: 24px;">
           <span style="font-size: 22px; color: var(--text-secondary);">SCORE: <span id="mgScore" class="text-cyan" style="font-weight: bold;">0</span></span>
           <span style="font-size: 22px; color: var(--text-secondary);">BEST: <span id="mgBest" class="text-yellow" style="font-weight: bold;">0</span></span>
         </div>
+        <button id="mgSoundBtn" style="background: transparent; border: none; cursor: pointer; color: white; display: flex; align-items: center; padding: 4px;" title="Toggle Sound">
+          <svg id="mgSoundIconOn" style="display: none;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+          <svg id="mgSoundIconOff" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        </button>
       </div>
 
       <!-- Canvas wrapper -->
@@ -56,6 +59,38 @@ export async function renderMinigame(container) {
   const deadBestEl = document.getElementById('mgDeadBest');
   const startBtn = document.getElementById('mgStartBtn');
   const retryBtn = document.getElementById('mgRetryBtn');
+  const soundBtn = document.getElementById('mgSoundBtn');
+  const soundIconOn = document.getElementById('mgSoundIconOn');
+  const soundIconOff = document.getElementById('mgSoundIconOff');
+
+  // Load from localStorage or default to true
+  let isSoundEnabled = localStorage.getItem('mgSoundEnabled') !== 'false';
+  
+  const jumpSound = new Audio('/mini game/lumora_studios-pixel-jump-319167.mp3');
+  jumpSound.volume = 0.5;
+  const dieSound = new Audio('/mini game/lumora_studios-pixel-explosion-319166.mp3');
+  dieSound.volume = 0.5;
+
+  // Initialize UI state
+  if (isSoundEnabled) {
+    soundIconOn.style.display = 'block';
+    soundIconOff.style.display = 'none';
+  } else {
+    soundIconOn.style.display = 'none';
+    soundIconOff.style.display = 'block';
+  }
+
+  soundBtn.addEventListener('click', () => {
+    isSoundEnabled = !isSoundEnabled;
+    localStorage.setItem('mgSoundEnabled', isSoundEnabled);
+    if (isSoundEnabled) {
+      soundIconOn.style.display = 'block';
+      soundIconOff.style.display = 'none';
+    } else {
+      soundIconOn.style.display = 'none';
+      soundIconOff.style.display = 'block';
+    }
+  });
 
   // ─── Load images ───────────────────────────────────────────────
   const loadImg = (src) => new Promise((res) => {
@@ -129,10 +164,18 @@ export async function renderMinigame(container) {
       // First jump
       velY = JUMP_FORCE;
       jumpCount = 1;
+      if (isSoundEnabled) {
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(() => {});
+      }
     } else if (jumpCount === 1) {
       // Double jump
       velY = DOUBLE_JUMP_FORCE;
       jumpCount = 2;
+      if (isSoundEnabled) {
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(() => {});
+      }
     }
   }
 
@@ -186,6 +229,10 @@ export async function renderMinigame(container) {
   // ─── Game Over ─────────────────────────────────────────────────
   function die() {
     running = false;
+    if (isSoundEnabled) {
+      dieSound.currentTime = 0;
+      dieSound.play().catch(() => {});
+    }
     if (animId) cancelAnimationFrame(animId);
     if (score > bestScore) {
       bestScore = score;
@@ -290,11 +337,20 @@ export async function renderMinigame(container) {
       const obj = obstacles[i];
       obj.x -= speed;
 
+      // Check if jumping over
+      if (obj.x < PLAYER_X + PLAYER_W && obj.x + obj.w > PLAYER_X) {
+        if (playerY + PLAYER_H / 2 < obj.y + obj.h / 2) {
+          obj.jumpedOver = true;
+        }
+      }
+
       // Score when passed
       if (!obj.scored && obj.x + obj.w < PLAYER_X) {
         obj.scored = true;
-        score++;
-        scoreEl.textContent = score;
+        if (obj.jumpedOver) {
+          score++;
+          scoreEl.textContent = score;
+        }
       }
 
       // Collision
