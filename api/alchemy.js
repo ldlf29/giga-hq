@@ -86,8 +86,21 @@ export default async function handler(req, res) {
 
   try {
     const logs = body?.event?.data?.block?.logs || [];
+    console.log(`[ALCHEMY] Received webhook. Logs count: ${logs.length}`);
+    console.log(`[ALCHEMY] Full body keys:`, JSON.stringify(Object.keys(body || {})));
+    console.log(`[ALCHEMY] event keys:`, JSON.stringify(Object.keys(body?.event || {})));
+    console.log(`[ALCHEMY] event.data keys:`, JSON.stringify(Object.keys(body?.event?.data || {})));
+
+    if (logs.length === 0) {
+      console.log('[ALCHEMY] No logs in this block, returning 200');
+      return res.status(200).json({ ok: true, message: 'no logs' });
+    }
 
     for (const log of logs) {
+      console.log(`[ALCHEMY] Log topic[0]: ${log.topics?.[0]}`);
+      console.log(`[ALCHEMY] Expected topic: ${RACE_CREATED_TOPIC}`);
+      console.log(`[ALCHEMY] Match: ${log.topics?.[0] === RACE_CREATED_TOPIC}`);
+
       // Filter: only RaceCreated events
       if (!log.topics || log.topics[0] !== RACE_CREATED_TOPIC) continue;
 
@@ -99,8 +112,9 @@ export default async function handler(req, res) {
           topics: log.topics,
           eventName: 'RaceCreated',
         });
+        console.log(`[ALCHEMY] Decoded successfully:`, JSON.stringify(decoded.args, (_, v) => typeof v === 'bigint' ? v.toString() : v));
       } catch (err) {
-        console.error('Failed to decode log:', err);
+        console.error('[ALCHEMY] Failed to decode log:', err);
         continue;
       }
 
@@ -127,15 +141,17 @@ export default async function handler(req, res) {
 
       // Get all registered users from Redis
       const users = await redis.smembers('users');
+      console.log(`[ALCHEMY] Users from Redis: ${JSON.stringify(users)} (count: ${users.length})`);
 
       for (const chatId of users) {
         const filter = (await redis.get(`filter:${chatId}`)) || 'all';
+        console.log(`[ALCHEMY] User ${chatId} filter: ${filter}, isPaid: ${isPaid}`);
 
         // Apply filter
         if (filter === 'paid' && !isPaid) continue;
         if (filter === 'free' &&  isPaid) continue;
 
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -145,12 +161,14 @@ export default async function handler(req, res) {
             disable_web_page_preview: true,
           }),
         });
+        const tgData = await tgRes.json();
+        console.log(`[ALCHEMY] Telegram response for ${chatId}:`, JSON.stringify(tgData));
       }
     }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    console.error('Handler error:', err);
+    console.error('[ALCHEMY] Handler error:', err);
     return res.status(500).json({ error: err.message });
   }
 }
