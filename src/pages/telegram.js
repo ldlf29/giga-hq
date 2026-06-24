@@ -3,8 +3,8 @@
 export async function renderTelegram(container) {
   container.innerHTML = `
     <div class="pixel-box" style="max-width: 900px; margin: 40px auto; padding: 30px;">
-      <h2 class="pixel-text text-cyan" style="font-size: 36px; text-align: center; margin-bottom: 30px;">
-        GIGLING RACE ALERTS
+      <h2 class="pixel-text" style="font-size: 36px; text-align: center; margin-bottom: 30px; color: #ffffff;">
+        GIGLING NEW RACES ALERTS
       </h2>
 
       <div class="pixel-box" style="margin-bottom: 30px; text-align: center; padding: 25px; background: rgba(0, 255, 255, 0.05); border-color: var(--neon-cyan);">

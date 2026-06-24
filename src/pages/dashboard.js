@@ -4,7 +4,7 @@ import { getGlobalStats, getLeaderboard, getRecentRaces, escapeHTML } from '../a
 export async function renderDashboard(container) {
   container.innerHTML = `
     <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
+      <h1 class="pixel-text" style="font-size: 40px; color: #ffffff; margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
       <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player or pet ID to view detailed racing statistics.</p>
       <div style="display: flex; gap: 10px;">
          <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
