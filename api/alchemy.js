@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from 'crypto';
-import { decodeEventLog } from 'viem';
+import { decodeAbiParameters } from 'viem';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
@@ -104,21 +104,33 @@ export default async function handler(req, res) {
       // Filter: only RaceCreated events
       if (!log.topics || log.topics[0] !== RACE_CREATED_TOPIC) continue;
 
-      let decoded;
+      let raceId, creator, fieldSize, trackLength, entryFee, seedPool;
       try {
-        decoded = decodeEventLog({
-          abi: RACE_CREATED_ABI,
-          data: log.data,
-          topics: log.topics,
-          eventName: 'RaceCreated',
-        });
-        console.log(`[ALCHEMY] Decoded successfully:`, JSON.stringify(decoded.args, (_, v) => typeof v === 'bigint' ? v.toString() : v));
+        // topics[1] = raceId, topics[2] = creator
+        raceId = BigInt(log.topics[1] || 0);
+        creator = '0x' + (log.topics[2] || '').slice(-40); // Convert padded bytes32 to address
+
+        // Decode data manually since it's 128 bytes (4 uint256s) instead of the expected 5
+        const decodedData = decodeAbiParameters(
+          [
+            { type: 'uint256', name: 'fieldSize' },
+            { type: 'uint256', name: 'trackLength' },
+            { type: 'uint256', name: 'entryFee' },
+            { type: 'uint256', name: 'creatorFeeBps' }, // assuming seedPool was omitted in data
+          ],
+          log.data
+        );
+        
+        fieldSize = decodedData[0];
+        trackLength = decodedData[1];
+        entryFee = decodedData[2];
+        seedPool = 0n; // default to 0 since it's missing from data
+        
+        console.log(`[ALCHEMY] Decoded manually. raceId: ${raceId}, creator: ${creator}, fieldSize: ${fieldSize}, trackLength: ${trackLength}, entryFee: ${entryFee}`);
       } catch (err) {
-        console.error('[ALCHEMY] Failed to decode log:', err);
+        console.error('[ALCHEMY] Failed to decode log manually:', err);
         continue;
       }
-
-      const { raceId, creator, fieldSize, trackLength, entryFee, seedPool } = decoded.args;
 
       const entryFeeWei  = BigInt(entryFee  || 0);
       const seedPoolWei  = BigInt(seedPool  || 0);
