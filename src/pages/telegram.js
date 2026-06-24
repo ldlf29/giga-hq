@@ -3,15 +3,16 @@
 export async function renderTelegram(container) {
   container.innerHTML = `
     <div class="pixel-box" style="max-width: 900px; margin: 40px auto; padding: 30px;">
-      <h2 class="pixel-text text-cyan" style="font-size: 36px; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px var(--neon-cyan);">
-        TELEGRAM RACE ALERTS
+      <h2 class="pixel-text text-cyan" style="font-size: 36px; text-align: center; margin-bottom: 30px;">
+        GIGLING RACE ALERTS
       </h2>
 
       <div class="pixel-box" style="margin-bottom: 30px; text-align: center; padding: 25px; background: rgba(0, 255, 255, 0.05); border-color: var(--neon-cyan);">
         <p style="font-size: 18px; margin-bottom: 15px;" class="pixel-text text-cyan">
-          Get instant Telegram notifications every time a new race is created on the Gigaverse.
+          Get instant Telegram notifications every time a new race is created in Gigling Racing.
         </p>
         <a href="https://t.me/giglingracebot" target="_blank" class="btn btn-pixel" style="font-size: 18px; padding: 12px 30px; display: inline-block; text-decoration: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px; margin-top: -3px;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
           OPEN BOT IN TELEGRAM
         </a>
       </div>
