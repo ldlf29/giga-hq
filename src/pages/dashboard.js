@@ -3,9 +3,13 @@ import { getGlobalStats, getLeaderboard, getRecentRaces, escapeHTML } from '../a
 
 export async function renderDashboard(container) {
   container.innerHTML = `
-    <div class="stat-counter" style="margin-bottom: 32px;">
-      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan);">RACING INTELLIGENCE CENTER</h1>
-      <p>Analyze player performance, scout pet attributes, and optimize hatching parameters.</p>
+    <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px;">RACING INTELLIGENCE CENTER</h1>
+      <p style="margin-bottom: 24px;">Analyze player performance, scout pet attributes, and optimize hatching parameters.</p>
+      <div style="display: flex; gap: 10px;">
+         <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
+         <button id="dashboardSearchBtn" class="btn btn-pixel" style="padding: 4px 24px; font-size: 20px; height: 48px;">SEARCH</button>
+      </div>
     </div>
 
     <!-- Global Stats Grid -->
@@ -42,6 +46,31 @@ export async function renderDashboard(container) {
       </div>
     </div>
   `;
+
+  // Setup Search Bar
+  const searchInput = document.getElementById('dashboardSearch');
+  const searchBtn = document.getElementById('dashboardSearchBtn');
+
+  const executeSearch = () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    if (/^0x[0-9a-fA-F]{40}$/.test(query)) {
+      searchInput.value = '';
+      history.pushState(null, '', `/player/${query}`);
+      window.dispatchEvent(new Event('popstate'));
+    } else if (/^\d+$/.test(query)) {
+      searchInput.value = '';
+      history.pushState(null, '', `/pet/${query}`);
+      window.dispatchEvent(new Event('popstate'));
+    } else {
+      searchInput.style.borderColor = 'var(--neon-pink)';
+      setTimeout(() => { searchInput.style.borderColor = 'var(--border-color)'; }, 1500);
+    }
+  };
+
+  searchBtn.addEventListener('click', executeSearch);
+  searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') executeSearch(); });
 
   // Load Global Stats
   try {
