@@ -11,7 +11,7 @@ export async function renderTelegram(container) {
         <p style="font-size: 18px; margin-bottom: 15px;">
           Get instant Telegram notifications every time a new race is created on the Gigaverse.
         </p>
-        <a href="https://t.me/GigaverseRaceBot" target="_blank" class="btn btn-pixel" style="font-size: 18px; padding: 12px 30px; display: inline-block; text-decoration: none;">
+        <a href="https://t.me/giglingracebot" target="_blank" class="btn btn-pixel" style="font-size: 18px; padding: 12px 30px; display: inline-block; text-decoration: none;">
           ➡️ OPEN BOT IN TELEGRAM
         </a>
       </div>

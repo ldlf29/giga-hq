@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     if (!existing) {
       await redis.set(`filter:${chatId}`, 'all');
     }
-    await send(chatId, `🏁 *Welcome to Gigaverse Race Alerts!*\n\nYou will now receive notifications for new races.\n\nCommands:\n/all — Receive all races\n/paid — Only paid races\n/free — Only free races\n/status — Check your current filter`);
+    await send(chatId, `🏁 *Welcome to Gigling Race Alerts!*\n\nYou will now receive notifications for new races.\n\nCommands:\n/all — Receive all races\n/paid — Only paid races\n/free — Only free races\n/status — Check your current filter`);
   }
   else if (text === '/all') {
     await redis.set(`filter:${chatId}`, 'all');
