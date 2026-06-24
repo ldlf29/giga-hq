@@ -4,8 +4,8 @@ import { getGlobalStats, getLeaderboard, getRecentRaces, escapeHTML } from '../a
 export async function renderDashboard(container) {
   container.innerHTML = `
     <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px;">RACING INTELLIGENCE CENTER</h1>
-      <p style="margin-bottom: 24px;">Analyze player performance, scout pet attributes, and optimize hatching parameters.</p>
+      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px; text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);">RACING ANALYTICS</h1>
+      <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player or pet ID to view detailed racing statistics.</p>
       <div style="display: flex; gap: 10px;">
          <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
          <button id="dashboardSearchBtn" class="btn btn-pixel" style="padding: 4px 24px; font-size: 20px; height: 48px;">SEARCH</button>
@@ -14,7 +14,7 @@ export async function renderDashboard(container) {
 
     <!-- Global Stats Grid -->
     <div class="stat-counter" style="text-align: left; margin-bottom: 24px;">
-      <h2 class="pixel-text" style="font-size: 28px; color: var(--text-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">GLOBAL PROTOCOL ANALYTICS</h2>
+      <h2 class="pixel-text" style="font-size: 28px; color: var(--text-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">GLOBAL STATS</h2>
     </div>
     
     <div id="globalStatsGrid" class="grid-4" style="margin-bottom: 40px;">
@@ -28,7 +28,7 @@ export async function renderDashboard(container) {
       <!-- ELO Leaderboard -->
       <div>
         <div class="stat-counter" style="text-align: left; margin-bottom: 16px;">
-          <h2 class="pixel-text text-yellow" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">TOP 10 GIGLINGS (ELO)</h2>
+          <h2 class="pixel-text text-yellow" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">TOP GIGLINGS</h2>
         </div>
         <div id="leaderboardGrid">
            <div class="card skeleton-rect skeleton-loader"></div>
@@ -38,7 +38,7 @@ export async function renderDashboard(container) {
       <!-- Recent Races -->
       <div>
         <div class="stat-counter" style="text-align: left; margin-bottom: 16px;">
-          <h2 class="pixel-text text-cyan" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">LATEST RACES</h2>
+          <h2 class="pixel-text text-cyan" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">RECENT RACES</h2>
         </div>
         <div id="recentRacesGrid">
            <div class="card skeleton-rect skeleton-loader"></div>
@@ -115,9 +115,9 @@ export async function renderDashboard(container) {
   try {
     const leaders = await getLeaderboard(10);
     if (leaders && leaders.length > 0) {
-      let lbHtml = '<div class="table-container"><table class="table-retro"><tr><th>Rank</th><th>Pet ID</th><th>ELO</th><th>Races</th></tr>';
+      let lbHtml = '<div class="table-container"><table class="table-retro"><tr><th class="pixel-text">Rank</th><th class="pixel-text">Pet ID</th><th class="pixel-text">ELO</th><th class="pixel-text">Races</th></tr>';
       leaders.forEach((l, index) => {
-        lbHtml += `<tr class="clickable" onclick="window.location.hash='#/pet/${l.petId}'">
+        lbHtml += `<tr class="clickable" onclick="history.pushState(null, '', '/pet/${l.petId}'); window.dispatchEvent(new Event('popstate'));">
           <td>#${index + 1}</td>
           <td><span class="text-cyan">${l.petId}</span></td>
           <td><span class="text-yellow">${Math.round(l.elo)}</span></td>
@@ -136,7 +136,7 @@ export async function renderDashboard(container) {
   try {
     const races = await getRecentRaces(10);
     if (races && races.length > 0) {
-      let racesHtml = '<div class="table-container"><table class="table-retro"><tr><th>ID</th><th>Phase</th><th>Entry</th><th>Pool</th></tr>';
+      let racesHtml = '<div class="table-container"><table class="table-retro"><tr><th class="pixel-text">ID</th><th class="pixel-text">Phase</th><th class="pixel-text">Entry</th><th class="pixel-text">Pool</th></tr>';
       races.forEach(r => {
         const entryStr = r.entryFeeWei === "0" ? "FREE" : (parseInt(r.entryFeeWei) / 1e18).toFixed(4) + " ETH";
         const poolStr = (parseInt(r.poolWei || "0") / 1e18).toFixed(4);
