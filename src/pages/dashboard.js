@@ -121,7 +121,7 @@ export async function renderDashboard(container) {
           <td>#${index + 1}</td>
           <td><span class="text-cyan">${l.petId}</span></td>
           <td><span class="text-yellow">${Math.round(l.elo)}</span></td>
-          <td>${l.races}</td>
+          <td>${l.racesRun || 0}</td>
         </tr>`;
       });
       lbHtml += '</table></div>';
@@ -138,15 +138,17 @@ export async function renderDashboard(container) {
     if (races && races.length > 0) {
       let racesHtml = '<div class="table-container"><table class="table-retro"><tr><th class="pixel-text">ID</th><th class="pixel-text">Phase</th><th class="pixel-text">Entry</th><th class="pixel-text">Pool</th></tr>';
       races.forEach(r => {
-        const entryStr = r.entryFeeWei === "0" ? "FREE" : (parseInt(r.entryFeeWei) / 1e18).toFixed(4) + " ETH";
-        const poolStr = (parseInt(r.poolWei || "0") / 1e18).toFixed(4);
+        const isFree = !r.entryFee || r.entryFee === "0";
+        const entryStr = isFree ? "FREE" : (parseInt(r.entryFee) / 1e18).toFixed(4) + " ETH";
+        const poolStr = isFree ? "-" : (parseInt(r.pool || "0") / 1e18).toFixed(4) + " ETH";
         const phaseColor = r.phase === 3 ? 'text-green' : (r.phase === 1 ? 'text-cyan' : 'text-muted');
-        racesHtml += `<tr>
-          <td>#${r.raceId}</td>
-          <td class="${phaseColor}">${r.phase === 1 ? 'OPEN' : r.phase === 2 ? 'RESOLVING' : r.phase === 3 ? 'RESOLVED' : 'OTHER'}</td>
-          <td>${entryStr}</td>
-          <td class="text-yellow">${poolStr} ETH</td>
-        </tr>`;
+        const raceUrl = r.phase === 3 ? \`https://gigaverse.io/racing/race/\${r.raceId}\` : \`https://gigaverse.io/racing?race=\${r.raceId}\`;
+        racesHtml += \`<tr>
+          <td><a href="\${raceUrl}" target="_blank" style="color: inherit; text-decoration: underline;">#\${r.raceId}</a></td>
+          <td class="\${phaseColor}">\${r.phase === 1 ? 'OPEN' : r.phase === 2 ? 'RESOLVING' : r.phase === 3 ? 'RESOLVED' : 'OTHER'}</td>
+          <td>\${entryStr}</td>
+          <td class="\${isFree ? 'text-muted' : 'text-yellow'}">\${poolStr}</td>
+        </tr>\`;
       });
       racesHtml += '</table></div>';
       document.getElementById('recentRacesGrid').innerHTML = racesHtml;
