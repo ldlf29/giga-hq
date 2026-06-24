@@ -157,7 +157,10 @@ export default async function handler(req, res) {
 
       for (const chatId of users) {
         const filter = (await redis.get(`filter:${chatId}`)) || 'all';
-        console.log(`[ALCHEMY] User ${chatId} filter: ${filter}, isPaid: ${isPaid}`);
+        const status = (await redis.get(`status:${chatId}`)) || 'active';
+        console.log(`[ALCHEMY] User ${chatId} filter: ${filter}, status: ${status}, isPaid: ${isPaid}`);
+
+        if (status === 'paused') continue;
 
         // Apply filter
         if (filter === 'paid' && !isPaid) continue;

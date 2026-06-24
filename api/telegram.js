@@ -21,13 +21,17 @@ export default async function handler(req, res) {
   const text = message.text.trim();
 
   if (text === '/start') {
-    // Register user with default filter "all"
+    // Register user with default filter "all" and status "active"
     await redis.sadd('users', chatId);
-    const existing = await redis.get(`filter:${chatId}`);
-    if (!existing) {
+    const existingFilter = await redis.get(`filter:${chatId}`);
+    if (!existingFilter) {
       await redis.set(`filter:${chatId}`, 'all');
     }
-    await send(chatId, `🏁 *Welcome to Gigling Race Alerts!*\n\nYou will now receive notifications for new races.\n\nCommands:\n/all — Receive all races\n/paid — Only paid races\n/free — Only free races\n/status — Check your current filter`);
+    const existingStatus = await redis.get(`status:${chatId}`);
+    if (!existingStatus) {
+      await redis.set(`status:${chatId}`, 'active');
+    }
+    await send(chatId, `*Welcome to Gigling Race Alerts!*\n\nYou will now receive notifications for new races.\n\nCommands:\n/all — Receive all races\n/paid — Only paid races\n/free — Only free races\n/status — Check your current filter\n/pause — Pause notifications\n/resume — Resume notifications`);
   }
   else if (text === '/all') {
     await redis.set(`filter:${chatId}`, 'all');
@@ -43,7 +47,16 @@ export default async function handler(req, res) {
   }
   else if (text === '/status') {
     const filter = await redis.get(`filter:${chatId}`) || 'all';
-    await send(chatId, `📊 Your current filter: *${filter}*`);
+    const status = await redis.get(`status:${chatId}`) || 'active';
+    await send(chatId, `Your current filter: *${filter}*\nStatus: *${status}*`);
+  }
+  else if (text === '/pause') {
+    await redis.set(`status:${chatId}`, 'paused');
+    await send(chatId, 'Bot paused. You will not receive any race alerts until you send /resume.');
+  }
+  else if (text === '/resume') {
+    await redis.set(`status:${chatId}`, 'active');
+    await send(chatId, 'Bot resumed! You will now receive race alerts according to your filter.');
   }
 
   return res.status(200).json({ ok: true });
