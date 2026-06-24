@@ -13,7 +13,7 @@ const app = document.querySelector('#app');
 app.innerHTML = `
   <header class="giga-header" style="position: relative;">
     <div class="giga-header-left">
-      <img src="/page-logo.png" alt="GIGAHQ Logo" class="logo-img" />
+      <img src="/giga-hq-logo.png" alt="GIGAHQ Logo" class="logo-img" />
     </div>
     <nav class="top-nav">
       <a href="/" class="nav-item route-link" id="nav-dashboard">ANALYTICS</a>
