@@ -94,7 +94,7 @@ export async function renderPet(container, petId) {
       recentRaces = history.recent || [];
 
       financialHtml = `
-        <div class="pixel-text" style="font-size: 20px; line-height: 1.4;">
+        <div style="font-family: var(--font-primary); font-size: 22px; line-height: 1.4;">
           <div style="margin-bottom: 6px;">Total Spent: <span style="color: var(--text-primary);">${spentEth.toFixed(5)} ETH</span></div>
           <div style="margin-bottom: 6px;">Total Won: <span style="color: var(--text-primary);">${wonEth.toFixed(5)} ETH</span></div>
           <div style="margin-bottom: 6px;">Net Profit: <span class="${netEth >= 0 ? 'text-green' : 'text-pink'}" style="font-weight: bold;">${netEth >= 0 ? '+' : ''}${netEth.toFixed(5)} ETH</span></div>
@@ -107,7 +107,7 @@ export async function renderPet(container, petId) {
     container.innerHTML = `
       <div class="stat-counter" style="text-align: left; margin-bottom: 24px;">
         <h1 class="pixel-text" style="font-size: 32px; color: #ffffff;">SCOUTING REPORT: GIGLING #${cleanId}</h1>
-        <p class="pixel-text" style="font-size: 20px;">Owner: <a href="javascript:void(0)" onclick="history.pushState(null, '', '/player/${pet.ownerAddress}'); window.dispatchEvent(new Event('popstate'));" class="text-cyan" style="text-decoration: none;">${escapeHTML(pet.ownerAddress)}</a></p>
+        <p style="font-family: var(--font-primary); font-size: 22px;">Owner: <a href="javascript:void(0)" onclick="history.pushState(null, '', '/player/${pet.ownerAddress}'); window.dispatchEvent(new Event('popstate'));" class="text-cyan" style="text-decoration: none;">${escapeHTML(pet.ownerAddress)}</a></p>
       </div>
       
       <div class="grid-2" style="margin-bottom: 32px; align-items: start;">
@@ -139,7 +139,7 @@ export async function renderPet(container, petId) {
               </div>
             </div>
             
-            <div class="pixel-text" style="border-top: 1px solid var(--border-color); padding-top: 12px; font-size: 18px;">
+            <div style="border-top: 1px solid var(--border-color); padding-top: 12px; font-family: var(--font-primary); font-size: 20px;">
               <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                 <span>Career Races:</span>
                 <span>${racesRun} / ${maxRaces}</span>
@@ -164,7 +164,7 @@ export async function renderPet(container, petId) {
             
             <div class="card card-glowing" style="border-color: var(--neon-cyan);">
               <h3 class="pixel-text text-cyan" style="font-size: 20px; margin-bottom: 12px;">RACE SUMMARY</h3>
-              <div class="pixel-text" style="font-size: 20px; line-height: 1.4;">
+              <div style="font-family: var(--font-primary); font-size: 22px; line-height: 1.4;">
                 <div style="margin-bottom: 6px;">Total Races: <span style="color: var(--text-primary);">${totalRaces}</span></div>
                 <div style="margin-bottom: 6px;">1st Places (Wins): <span class="text-green" style="font-weight: bold;">${winsCount}</span></div>
                 <div style="margin-bottom: 6px;">Podiums (1st-3rd): <span class="text-cyan">${podiumsCount}</span></div>
@@ -254,12 +254,12 @@ export async function renderPet(container, petId) {
                     <tr class="clickable" onclick="history.pushState(null, '', '/race/${r.raceId}'); window.dispatchEvent(new Event('popstate'));">
                       <td><span class="text-cyan">#${r.raceId}</span></td>
                       <td style="font-weight: bold; color: ${isWin ? 'var(--neon-yellow)' : (isPodium ? 'var(--neon-cyan)' : 'var(--text-secondary)')};">${rankLabel}</td>
-                      <td class="pixel-text" style="font-size: 16px;">${payoutEth.toFixed(5)} ETH</td>
-                      <td class="pixel-text" style="font-size: 16px;">${entryEth.toFixed(5)} ETH</td>
-                      <td class="pixel-text ${pDiffEth >= 0 ? 'text-green' : 'text-pink'}" style="font-size: 16px;">
+                      <td style="font-family: var(--font-primary); font-size: 20px;">${payoutEth.toFixed(5)} ETH</td>
+                      <td style="font-family: var(--font-primary); font-size: 20px;">${entryEth.toFixed(5)} ETH</td>
+                      <td class="${pDiffEth >= 0 ? 'text-green' : 'text-pink'}" style="font-family: var(--font-primary); font-size: 20px;">
                         ${pDiffEth >= 0 ? '+' : ''}${pDiffEth.toFixed(5)} ETH
                       </td>
-                      <td class="pixel-text" style="font-size: 16px;">${date}</td>
+                      <td style="font-family: var(--font-primary); font-size: 20px;">${date}</td>
                     </tr>
                   `;
                 }).join('')}
