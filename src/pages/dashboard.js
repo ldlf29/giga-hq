@@ -5,7 +5,7 @@ export async function renderDashboard(container) {
   container.innerHTML = `
     <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
       <h1 class="pixel-text" style="font-size: 40px; color: #ffffff; margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
-      <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player or pet ID to view detailed racing statistics.</p>
+      <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player wallet or pet ID to view detailed racing statistics.</p>
       <div style="display: flex; gap: 10px;">
          <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
          <button id="dashboardSearchBtn" class="btn btn-pixel" style="padding: 4px 24px; font-size: 20px; height: 48px;">SEARCH</button>
@@ -142,13 +142,13 @@ export async function renderDashboard(container) {
         const entryStr = isFree ? "FREE" : (parseInt(r.entryFee) / 1e18).toFixed(4) + " ETH";
         const poolStr = isFree ? "-" : (parseInt(r.pool || "0") / 1e18).toFixed(4) + " ETH";
         const phaseColor = r.phase === 3 ? 'text-green' : (r.phase === 1 ? 'text-cyan' : 'text-muted');
-        const raceUrl = r.phase === 3 ? \`https://gigaverse.io/racing/race/\${r.raceId}\` : \`https://gigaverse.io/racing?race=\${r.raceId}\`;
-        racesHtml += \`<tr>
-          <td><a href="\${raceUrl}" target="_blank" style="color: inherit; text-decoration: underline;">#\${r.raceId}</a></td>
-          <td class="\${phaseColor}">\${r.phase === 1 ? 'OPEN' : r.phase === 2 ? 'RESOLVING' : r.phase === 3 ? 'RESOLVED' : 'OTHER'}</td>
-          <td>\${entryStr}</td>
-          <td class="\${isFree ? 'text-muted' : 'text-yellow'}">\${poolStr}</td>
-        </tr>\`;
+        const raceUrl = (r.phase === 2 || r.phase === 3) ? `https://gigaverse.io/racing/race/${r.raceId}` : `https://gigaverse.io/racing?race=${r.raceId}`;
+        racesHtml += `<tr>
+          <td><a href="${raceUrl}" target="_blank" style="color: inherit; text-decoration: underline;">#${r.raceId}</a></td>
+          <td class="${phaseColor}">${r.phase === 1 ? 'OPEN' : r.phase === 2 ? 'RESOLVING' : r.phase === 3 ? 'RESOLVED' : 'OTHER'}</td>
+          <td>${entryStr}</td>
+          <td class="${isFree ? 'text-muted' : 'text-yellow'}">${poolStr}</td>
+        </tr>`;
       });
       racesHtml += '</table></div>';
       document.getElementById('recentRacesGrid').innerHTML = racesHtml;
