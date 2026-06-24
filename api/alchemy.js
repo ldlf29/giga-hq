@@ -25,13 +25,13 @@ async function getRawBody(req) {
 /** Verifies the x-alchemy-signature header against the raw body */
 function verifyAlchemySignature(rawBody, signature, signingKey) {
   const hmac = createHmac('sha256', signingKey);
-  hmac.update(rawBody, 'utf8');
+  hmac.update(rawBody); // rawBody is already a Buffer
   const digest = hmac.digest('hex');
-  try {
-    return timingSafeEqual(Buffer.from(digest), Buffer.from(signature));
-  } catch {
-    return false;
-  }
+  // timingSafeEqual requires equal-length buffers
+  const digestBuf = Buffer.from(digest);
+  const sigBuf    = Buffer.from(signature);
+  if (digestBuf.length !== sigBuf.length) return false;
+  return timingSafeEqual(digestBuf, sigBuf);
 }
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
