@@ -127,7 +127,7 @@ body {
 }
 
 .logo-img {
-  max-height: 48px;
+  max-height: 36px;
   height: auto;
   object-fit: contain;
   display: block;
@@ -156,6 +156,9 @@ body {
   align-items: center;
   height: 100%;
   gap: 8px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .nav-item {
@@ -165,7 +168,7 @@ body {
   padding: 0 24px;
   color: #6c809a;
   text-decoration: none;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
   font-family: var(--font-title);
   transition: var(--transition-fast);

@@ -11,17 +11,17 @@ import { renderTelegram } from './pages/telegram.js';
 // Setup Layout skeleton
 const app = document.querySelector('#app');
 app.innerHTML = `
-  <header class="giga-header">
+  <header class="giga-header" style="position: relative;">
     <div class="giga-header-left">
-      <img src="/giga-hq-logo.png" alt="GIGAHQ Logo" class="logo-img" />
-      <nav class="top-nav">
-        <a href="#/" class="nav-item" id="nav-dashboard">ANALYTICS</a>
-        <a href="#/hatching" class="nav-item" id="nav-hatching">EGG HATCHERY</a>
-        <a href="#/telegram" class="nav-item" id="nav-telegram">TELEGRAM BOT</a>
-        <a href="#/minigame" class="nav-item" id="nav-minigame">MINI GAME</a>
-        <a href="#/customskin" class="nav-item" id="nav-customskin">CUSTOM SKIN</a>
-      </nav>
+      <img src="/page-logo.png" alt="GIGAHQ Logo" class="logo-img" />
     </div>
+    <nav class="top-nav">
+      <a href="/" class="nav-item route-link" id="nav-dashboard">ANALYTICS</a>
+      <a href="/hatching" class="nav-item route-link" id="nav-hatching">EGG HATCHERY</a>
+      <a href="/telegram" class="nav-item route-link" id="nav-telegram">TELEGRAM BOT</a>
+      <a href="/minigame" class="nav-item route-link" id="nav-minigame">MINI GAME</a>
+      <a href="/customskin" class="nav-item route-link" id="nav-customskin">CUSTOM SKIN</a>
+    </nav>
     <div class="giga-header-right">
        <input type="text" id="headerSearch" class="input-field input-pixel" style="height: 40px; padding: 4px 16px; font-size: 20px; width: 220px;" placeholder="Search player/pet..." />
        <button id="headerSearchBtn" class="btn btn-pixel" style="padding: 4px 16px; font-size: 20px; height: 40px;">GO</button>
@@ -47,10 +47,12 @@ const executeHeaderSearch = () => {
 
   if (/^0x[0-9a-fA-F]{40}$/.test(query)) {
     headerSearchInput.value = '';
-    window.location.hash = `#/player/${query}`;
+    history.pushState(null, '', `/player/${query}`);
+    router();
   } else if (/^\d+$/.test(query)) {
     headerSearchInput.value = '';
-    window.location.hash = `#/pet/${query}`;
+    history.pushState(null, '', `/pet/${query}`);
+    router();
   } else {
     // Show quick visual shake or warning color
     headerSearchInput.style.borderColor = 'var(--neon-pink)';
@@ -74,9 +76,9 @@ function highlightNav(activeId) {
   }
 }
 
-// Simple Hash Router
+// History API Router
 async function router() {
-  const hash = window.location.hash || '#/';
+  const path = window.location.pathname || '/';
   
   // Clean up container before render
   viewContainer.innerHTML = `
@@ -86,33 +88,33 @@ async function router() {
   `;
 
   // Route matches
-  if (hash === '#/' || hash === '') {
+  if (path === '/') {
     highlightNav('nav-dashboard');
     await renderDashboard(viewContainer);
   } 
-  else if (hash.startsWith('#/player/')) {
-    const address = hash.replace('#/player/', '');
+  else if (path.startsWith('/player/')) {
+    const address = path.replace('/player/', '');
     highlightNav('');
     await renderPlayer(viewContainer, address);
   } 
-  else if (hash.startsWith('#/pet/')) {
-    const petId = hash.replace('#/pet/', '');
+  else if (path.startsWith('/pet/')) {
+    const petId = path.replace('/pet/', '');
     highlightNav('');
     await renderPet(viewContainer, petId);
   }
-  else if (hash === '#/hatching') {
+  else if (path === '/hatching') {
     highlightNav('nav-hatching');
     await renderHatching(viewContainer);
   }
-  else if (hash === '#/telegram') {
+  else if (path === '/telegram') {
     highlightNav('nav-telegram');
     await renderTelegram(viewContainer);
   }
-  else if (hash === '#/minigame') {
+  else if (path === '/minigame') {
     highlightNav('nav-minigame');
     await renderMinigame(viewContainer);
   }
-  else if (hash === '#/customskin') {
+  else if (path === '/customskin') {
     highlightNav('nav-customskin');
     await renderCustomSkin(viewContainer);
   }
@@ -122,12 +124,24 @@ async function router() {
       <div class="pixel-box" style="text-align: center; border-color: var(--neon-pink); max-width: 600px; margin: 50px auto;">
         <h2 class="pixel-text text-pink">404 - SITE INTEL OFFLINE</h2>
         <p>The routing parameters you searched do not map to any known database.</p>
-        <a href="#/" class="btn btn-pixel">RETURN TO DASHBOARD</a>
+        <a href="/" class="btn btn-pixel route-link">RETURN TO DASHBOARD</a>
       </div>
     `;
   }
 }
 
+// Intercept link clicks for SPA routing
+document.body.addEventListener('click', e => {
+  if (e.target.matches('a.route-link') || e.target.closest('a.route-link')) {
+    e.preventDefault();
+    const href = (e.target.closest('a.route-link') || e.target).getAttribute('href');
+    if (href) {
+      history.pushState(null, '', href);
+      router();
+    }
+  }
+});
+
 // Router Event Listeners
-window.addEventListener('hashchange', router);
+window.addEventListener('popstate', router);
 window.addEventListener('load', router);
