@@ -608,21 +608,22 @@ p {
 .table-retro {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 20px;
+  font-family: var(--font-pixel);
   text-align: left;
 }
 
 .table-retro th {
   border-bottom: 2px solid var(--border-color);
-  padding: 12px 16px;
+  padding: 16px 20px;
   color: var(--text-muted);
   font-family: var(--font-pixel);
-  font-size: 18px;
+  font-size: 22px;
   text-transform: uppercase;
 }
 
 .table-retro td {
-  padding: 14px 16px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
 }

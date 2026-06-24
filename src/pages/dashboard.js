@@ -4,7 +4,7 @@ import { getGlobalStats, getLeaderboard, getRecentRaces, escapeHTML } from '../a
 export async function renderDashboard(container) {
   container.innerHTML = `
     <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px; text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);">RACING ANALYTICS</h1>
+      <h1 class="pixel-text" style="font-size: 40px; color: var(--neon-cyan); margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
       <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player or pet ID to view detailed racing statistics.</p>
       <div style="display: flex; gap: 10px;">
          <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
@@ -78,7 +78,7 @@ export async function renderDashboard(container) {
     if (stats) {
       const formattedVolume = (parseFloat(stats.totalEntryFeeVolumeWei) / 1e18).toFixed(4);
       const formattedFees = (parseFloat(stats.totalProtocolFeesWei) / 1e18).toFixed(4);
-      
+
       document.getElementById('globalStatsGrid').innerHTML = `
         <div class="card card-glowing">
           <div class="stat-counter">
