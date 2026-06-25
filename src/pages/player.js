@@ -23,35 +23,24 @@ export async function renderPlayer(container, address) {
     return;
   }
 
-  // Display initial loading skeletons
+  // Display initial loading screen
   container.innerHTML = `
-    <div class="stat-counter" style="text-align: left; margin-bottom: 24px;">
-      <h1 class="pixel-text" style="font-size: 32px; color: #ffffff;">PLAYER HISTORY REPORT</h1>
-      <p style="font-family: monospace; font-size: 14px; word-break: break-all;">Target Wallet: <span class="text-cyan">${cleanAddress}</span></p>
-    </div>
-    
-    <div class="grid-3" style="margin-bottom: 32px;">
-      <div class="card skeleton-rect skeleton-loader"></div>
-      <div class="card skeleton-rect skeleton-loader"></div>
-      <div class="card skeleton-rect skeleton-loader"></div>
-    </div>
-    
-    <div class="pixel-box">
-      <div class="pixel-box-title">PORTFOLIO OF DISCOVERED PETS</div>
-      <div class="grid-3" id="playerPetsGrid">
-        <div class="card skeleton-rect skeleton-loader"></div>
-        <div class="card skeleton-rect skeleton-loader"></div>
-        <div class="card skeleton-rect skeleton-loader"></div>
-      </div>
-    </div>
-
-    <div class="pixel-box">
-      <div class="pixel-box-title">RECENT RACING ACTIVITY LOG</div>
-      <div id="playerRacesTable" class="table-container">
-        <div class="skeleton-text skeleton-loader" style="height: 30px;"></div>
-        <div class="skeleton-text skeleton-loader" style="height: 30px; width: 80%;"></div>
-        <div class="skeleton-text skeleton-loader" style="height: 30px; width: 90%;"></div>
-      </div>
+    <style>
+      @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; margin-bottom: 24px;">
+        <line x1="12" y1="2" x2="12" y2="6"></line>
+        <line x1="12" y1="18" x2="12" y2="22"></line>
+        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+        <line x1="2" y1="12" x2="6" y2="12"></line>
+        <line x1="18" y1="12" x2="22" y2="12"></line>
+        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+      </svg>
+      <h2 class="pixel-text text-cyan" style="font-size: 32px; letter-spacing: 2px; margin: 0;">LOADING DATA...</h2>
+      <p style="font-family: var(--font-pixel); font-size: 24px; color: var(--text-secondary); margin-top: 12px; letter-spacing: 1px;">IT MAY TAKE A FEW SECONDS..</p>
     </div>
   `;
 
