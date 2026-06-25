@@ -140,7 +140,11 @@ export async function renderDashboard(container) {
       races.forEach(r => {
         const isFree = !r.entryFee || r.entryFee === "0";
         const entryStr = isFree ? "FREE" : (parseInt(r.entryFee) / 1e18).toFixed(4) + " ETH";
-        const poolStr = isFree ? "-" : (parseInt(r.pool || "0") / 1e18).toFixed(4) + " ETH";
+        let poolWei = BigInt(r.pool || "0");
+        if (poolWei === 0n && !isFree) {
+          poolWei = BigInt(r.entryFee) * BigInt(r.petCount || r.fieldSize || 0);
+        }
+        const poolStr = isFree ? "-" : (parseFloat(poolWei) / 1e18).toFixed(4) + " ETH";
         const phaseColor = r.phase === 3 ? 'text-green' : (r.phase === 1 ? 'text-cyan' : 'text-muted');
         const raceUrl = (r.phase === 2 || r.phase === 3) ? `https://gigaverse.io/racing/race/${r.raceId}` : `https://gigaverse.io/racing?race=${r.raceId}`;
         racesHtml += `<tr>

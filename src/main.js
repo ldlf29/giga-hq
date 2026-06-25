@@ -7,6 +7,9 @@ import { renderHatching } from './pages/hatching.js';
 import { renderMinigame } from './pages/minigame.js';
 import { renderCustomSkin } from './pages/customskin.js';
 import { renderTelegram } from './pages/telegram.js';
+import { initParticles } from './particles.js';
+
+// Background particles will be initialized after layout
 
 // Setup Layout skeleton
 const app = document.querySelector('#app');
@@ -128,3 +131,6 @@ document.body.addEventListener('click', e => {
 // Router Event Listeners
 window.addEventListener('popstate', router);
 window.addEventListener('load', router);
+
+// Initialize particles inside the app container behind the content
+initParticles();

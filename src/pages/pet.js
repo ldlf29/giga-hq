@@ -168,7 +168,6 @@ export async function renderPet(container, petId) {
                 <div style="margin-bottom: 6px;">Total Races: <span style="color: var(--text-primary);">${totalRaces}</span></div>
                 <div style="margin-bottom: 6px;">1st Places (Wins): <span class="text-green" style="font-weight: bold;">${winsCount}</span></div>
                 <div style="margin-bottom: 6px;">Podiums (1st-3rd): <span class="text-cyan">${podiumsCount}</span></div>
-                <div>Status: <span class="${pet.locked ? 'text-pink' : 'text-green'}">${pet.locked ? 'Locked' : 'Ready'}</span></div>
               </div>
             </div>
           </div>
@@ -182,7 +181,7 @@ export async function renderPet(container, petId) {
             ${renderStatBar('Stamina', racePub.staminaRange, racePub.revealsPerStat?.stamina || 0)}
             ${renderStatBar('Finish', racePub.finishRange, racePub.revealsPerStat?.finish || 0)}
 
-            <div style="font-size: 12px; color: var(--text-muted); margin-top: 12px; text-align: center; font-style: italic;">
+            <div style="font-size: 17px; color: var(--text-muted); margin-top: 12px; text-align: center; font-style: italic; font-family: var(--font-primary);">
               Note: Stats are fully revealed (Min = Max) after 12 career races.
             </div>
           </div>
@@ -190,12 +189,15 @@ export async function renderPet(container, petId) {
           <!-- Traits Section -->
           ${racePub.traits && racePub.traits.length > 0 ? `
             <div class="pixel-box">
-              <div class="pixel-box-title">GIGLING CHARACTER TRAITS</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="pixel-box-title" style="margin-bottom: 0;">GIGLING CHARACTER TRAITS</div>
+                <button id="traitsInfoBtn" class="btn-giga-gold" style="font-size: 16px; padding: 4px 12px; height: 32px;">INFO</button>
+              </div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 ${racePub.traits.map(t => `
                   <div class="badge" style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 12px;">
-                    <span class="pixel-text" style="font-size: 16px; color: var(--text-primary); margin-right: 6px;">${escapeHTML(t.name)}</span>
-                    <span class="text-yellow" style="font-family: monospace; font-size: 12px; font-weight: bold;">Tier ${t.tier}</span>
+                    <span style="font-family: var(--font-primary); font-size: 20px; color: var(--text-primary); margin-right: 6px;">${escapeHTML(t.name)}</span>
+                    <span class="text-yellow" style="font-family: var(--font-primary); font-size: 16px; font-weight: bold;">Tier ${t.tier}</span>
                   </div>
                 `).join('')}
               </div>
@@ -251,7 +253,7 @@ export async function renderPet(container, petId) {
                   const date = new Date(r.settledAt * 1000).toLocaleString();
 
                   return `
-                    <tr class="clickable" onclick="history.pushState(null, '', '/race/${r.raceId}'); window.dispatchEvent(new Event('popstate'));">
+                    <tr class="clickable" onclick="window.open('https://gigaverse.io/racing/race/${r.raceId}', '_blank');">
                       <td><span class="text-cyan">#${r.raceId}</span></td>
                       <td style="font-weight: bold; color: ${isWin ? 'var(--neon-yellow)' : (isPodium ? 'var(--neon-cyan)' : 'var(--text-secondary)')};">${rankLabel}</td>
                       <td style="font-family: var(--font-primary); font-size: 20px;">${payoutEth.toFixed(5)} ETH</td>
@@ -275,6 +277,86 @@ export async function renderPet(container, petId) {
     if (canvas) {
       drawCanvasChart(canvas, recentRaces);
     }
+
+    // Modal Setup for Traits Info button
+    const traitsInfoBtn = document.getElementById('traitsInfoBtn');
+    if (traitsInfoBtn) {
+      const PET_IMAGES = [
+        '/pet/1.PNG',
+        '/pet/2.PNG'
+      ];
+      let currentModalIndex = 0;
+
+      traitsInfoBtn.addEventListener('click', () => {
+        currentModalIndex = 0;
+        const modalEl = document.createElement('div');
+        modalEl.id = 'traitsInfoModal';
+        modalEl.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.85);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10000;
+        `;
+
+        modalEl.innerHTML = `
+          <div class="pixel-box" style="width: 95%; max-width: 1175px; padding: 24px; text-align: center; background-color: var(--bg-panel); border-color: var(--border-color); display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 12px;">
+              <h2 class="pixel-text" id="modalTitle" style="color: #ffffff; margin: 0; font-size: 30px;">CHARACTER TRAITS INFO</h2>
+              <button id="modalCloseBtn" class="btn btn-pixel" style="padding: 4px 12px; font-size: 20px;">X</button>
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center;">
+              <img id="modalPetImg" src="${PET_IMAGES[currentModalIndex]}" style="max-width: 100%; height: auto; border: 2px solid var(--border-color); border-radius: 6px;" alt="Pet Traits Info" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <button id="modalPrevBtn" class="btn btn-pixel" style="font-size: 20px; padding: 6px 16px;">PREV</button>
+              <span id="modalCaption" class="pixel-text" style="font-size: 22px; color: var(--text-secondary);">Image 1 of ${PET_IMAGES.length}</span>
+              <button id="modalNextBtn" class="btn btn-pixel" style="font-size: 20px; padding: 6px 16px;">NEXT</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(modalEl);
+
+        const modalPetImg = document.getElementById('modalPetImg');
+        const modalCaption = document.getElementById('modalCaption');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalPrevBtn = document.getElementById('modalPrevBtn');
+        const modalNextBtn = document.getElementById('modalNextBtn');
+
+        const updateModalSlide = () => {
+          modalPetImg.src = PET_IMAGES[currentModalIndex];
+          modalCaption.textContent = `Image ${currentModalIndex + 1} of ${PET_IMAGES.length}`;
+        };
+
+        modalCloseBtn.addEventListener('click', () => {
+          modalEl.remove();
+        });
+
+        modalPrevBtn.addEventListener('click', () => {
+          currentModalIndex = (currentModalIndex - 1 + PET_IMAGES.length) % PET_IMAGES.length;
+          updateModalSlide();
+        });
+
+        modalNextBtn.addEventListener('click', () => {
+          currentModalIndex = (currentModalIndex + 1) % PET_IMAGES.length;
+          updateModalSlide();
+        });
+
+        // Close on clicking backdrop
+        modalEl.addEventListener('click', (e) => {
+          if (e.target === modalEl) modalEl.remove();
+        });
+      });
+    }
+
 
   } catch (error) {
     container.innerHTML = `
@@ -307,9 +389,9 @@ function renderStatBar(name, rangeObj, reveals) {
 
   return `
     <div class="stat-bar-container">
-      <div class="stat-bar-header">
-        <span style="font-weight: bold;">${name}</span>
-        <span style="font-family: monospace;">${labelText} <span class="text-muted" style="font-size: 11px;">(${reveals}/12 reveals)</span></span>
+      <div class="stat-bar-header" style="align-items: center; margin-bottom: 6px;">
+        <span style="font-family: var(--font-primary); font-size: 24px; font-weight: bold; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">${name}</span>
+        <span style="font-family: var(--font-primary); font-size: 20px; color: var(--text-secondary);">${labelText} <span class="text-muted" style="font-size: 15px;">(${reveals}/12 reveals)</span></span>
       </div>
       <div class="stat-bar-outer">
         ${isFullyRevealed ? `
