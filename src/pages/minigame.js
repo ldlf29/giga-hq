@@ -103,7 +103,7 @@ export async function renderMinigame(container) {
   const [imgGigling, imgObjective, imgBg] = await Promise.all([
     loadImg('/mini game/gigling.png'),
     loadImg('/mini game/objective.png'),
-    loadImg('/mini game/background.jpg'),
+    loadImg('/mini game/background.png'),
   ]);
 
   // ─── Constants ─────────────────────────────────────────────────
