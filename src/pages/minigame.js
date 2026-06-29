@@ -139,6 +139,19 @@ export async function renderMinigame(container) {
     loadImg('/mini game/background.png'),
   ]);
 
+  // Pre-render scaled background to avoid expensive downscaling every frame on mobile
+  let cachedBgCanvas = null;
+  let bgW = 0;
+  if (imgBg.complete && imgBg.naturalWidth) {
+    const H = 400; // Match canvas height
+    bgW = imgBg.naturalWidth * (H / imgBg.naturalHeight);
+    cachedBgCanvas = document.createElement('canvas');
+    cachedBgCanvas.width = bgW;
+    cachedBgCanvas.height = H;
+    const cCtx = cachedBgCanvas.getContext('2d');
+    cCtx.drawImage(imgBg, 0, 0, bgW, H);
+  }
+
   // ─── Constants ─────────────────────────────────────────────────
   const GROUND_Y = H - 60;           // y-position of the ground line
   const PLAYER_W = 64;
@@ -281,13 +294,12 @@ export async function renderMinigame(container) {
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Scrolling background (tile the image)
-    if (imgBg.complete && imgBg.naturalWidth) {
-      const bgW = imgBg.naturalWidth * (H / imgBg.naturalHeight);
+    // Scrolling background (tile the cached image)
+    if (cachedBgCanvas) {
       const totalBg = Math.ceil(W / bgW) + 2;
       const startX = -(bgOffset % bgW);
       for (let i = 0; i < totalBg; i++) {
-        ctx.drawImage(imgBg, startX + i * bgW, 0, bgW, H);
+        ctx.drawImage(cachedBgCanvas, startX + i * bgW, 0);
       }
     } else {
       ctx.fillStyle = '#04070a';
