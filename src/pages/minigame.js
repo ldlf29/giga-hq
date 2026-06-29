@@ -185,6 +185,12 @@ export async function renderMinigame(container) {
   let obstacles, spawnTimer, spawnInterval;
   let frameCount;
 
+  // Fixed time step configuration for 144 FPS logic
+  const TARGET_FPS = 144;
+  const FIXED_DELTA = 1000 / TARGET_FPS;
+  let accumulator = 0;
+  let lastTime = 0;
+
   function resetState() {
     playerY = GROUND_Y - PLAYER_H;
     velY = 0;
@@ -196,6 +202,8 @@ export async function renderMinigame(container) {
     spawnInterval = randInt(SPAWN_MIN, SPAWN_MAX);
     score = 0;
     frameCount = 0;
+    accumulator = 0;
+    lastTime = 0;
     scoreEl.textContent = '0';
   }
 
@@ -344,9 +352,7 @@ export async function renderMinigame(container) {
   }
 
   // ─── Game Loop ─────────────────────────────────────────────────
-  function gameLoop() {
-    if (!running) return;
-
+  function updatePhysics() {
     frameCount++;
 
     // Speed ramp
@@ -401,7 +407,6 @@ export async function renderMinigame(container) {
       // Collision
       if (checkCollision(obj)) {
         die();
-        draw();
         return;
       }
 
@@ -410,9 +415,29 @@ export async function renderMinigame(container) {
         obstacles.splice(i, 1);
       }
     }
+  }
+
+  function gameLoop(time) {
+    if (!running) return;
+
+    if (lastTime === 0) lastTime = time;
+    let delta = time - lastTime;
+    if (delta > 100) delta = 100; // Cap to prevent death spirals if tab is inactive
+    lastTime = time;
+
+    accumulator += delta;
+
+    while (accumulator >= FIXED_DELTA) {
+      updatePhysics();
+      if (!running) break; // Stop updating if player died
+      accumulator -= FIXED_DELTA;
+    }
 
     draw();
-    animId = requestAnimationFrame(gameLoop);
+
+    if (running) {
+      animId = requestAnimationFrame(gameLoop);
+    }
   }
 
   // ─── Start / Retry ─────────────────────────────────────────────
@@ -421,6 +446,7 @@ export async function renderMinigame(container) {
     overlayStart.style.display = 'none';
     overlayDead.style.display = 'none';
     running = true;
+    lastTime = performance.now();
     animId = requestAnimationFrame(gameLoop);
   }
 
