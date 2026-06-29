@@ -49,22 +49,22 @@ function removeImageBackground(imgUrl) {
 export async function renderCustomSkin(container) {
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 24px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; gap: 24px; flex-wrap: wrap;">
-        <div>
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 1 1 300px;">
           <h1 class="pixel-text" style="font-size: 32px; color: var(--text-primary); margin: 0;">CUSTOM SKIN STUDIO</h1>
           <p style="margin: 0; font-size: 20px; color: var(--text-secondary);">Customize your Gigling with accessories and mounts.</p>
         </div>
-        <div class="search-container" style="max-width: 500px; display: flex; gap: 12px; align-items: center; margin: 0;">
-          <input type="text" id="skinGiglingId" class="input-field input-pixel" placeholder="Enter Gigling ID (e.g. 123)..." style="margin: 0;" />
-          <button id="skinLoadBtn" class="btn-giga-gold" style="height: 48px; padding: 0 24px; font-size: 22px; margin: 0; display: flex; align-items: center; justify-content: center;">LOAD</button>
+        <div class="search-container" style="flex: 1 1 300px; display: flex; gap: 12px; align-items: center; margin: 0; max-width: 100%;">
+          <input type="text" id="skinGiglingId" class="input-field input-pixel" placeholder="Enter Gigling ID (e.g. 123)..." style="margin: 0; flex: 1; min-width: 0;" />
+          <button id="skinLoadBtn" class="btn-giga-gold" style="height: 48px; padding: 0 24px; font-size: 22px; margin: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">LOAD</button>
         </div>
       </div>
 
-      <div id="skinEditorContainer" class="grid-2" style="display: none; align-items: start;">
+      <div id="skinEditorContainer" class="grid-2" style="display: none; align-items: start; width: 100%;">
         <!-- Left: Canvas/Preview -->
-        <div class="pixel-box" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 24px;">
+        <div class="pixel-box" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; padding: 16px; width: 100%;">
           <div class="pixel-box-title" style="align-self: flex-start; margin-bottom: 24px;">PREVIEW</div>
-          <div id="skinPreviewArea" style="position: relative; width: 300px; height: 300px; background-color: #050911; border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div id="skinPreviewArea" style="position: relative; width: 100%; max-width: 300px; aspect-ratio: 1; height: auto; background-color: #050911; border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <img id="skinBgImage" src="/skin maker/mount/background1.png" crossOrigin="anonymous" style="width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; position: absolute; z-index: 0; display: none; pointer-events: none;" />
             <img id="skinBaseImage" src="" crossOrigin="anonymous" style="width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; position: absolute; z-index: 1;" />
             <img id="skinMountImage" src="" style="width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; position: absolute; z-index: 2; display: none;" />
@@ -77,12 +77,12 @@ export async function renderCustomSkin(container) {
         </div>
 
         <!-- Right: Options -->
-        <div class="pixel-box" style="padding: 24px;">
+        <div class="pixel-box" style="padding: 16px; width: 100%;">
           <div class="pixel-box-title">ACCESSORIES</div>
           
           <div style="display: flex; flex-direction: column; gap: 16px;">
             <div class="card" style="padding: 16px; background-color: var(--bg-card);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
                 <span style="font-family: var(--font-pixel); font-size: 24px; color: var(--text-primary);">GLASSES</span>
                 <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px;">
                   <input type="checkbox" id="toggleGlasses" style="opacity: 0; width: 0; height: 0;">
@@ -94,7 +94,7 @@ export async function renderCustomSkin(container) {
               <p style="margin: 0; font-size: 18px; color: var(--text-muted);">Equip stylish sunglasses.</p>
             </div>
             <div class="card" style="padding: 16px; background-color: var(--bg-card);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
                 <span style="font-family: var(--font-pixel); font-size: 24px; color: var(--neon-purple);">MOUNTS</span>
                 <button id="clearMountBtn" class="btn btn-pixel" style="padding: 4px 8px; font-size: 16px; border-color: var(--neon-pink); color: var(--neon-pink);">CLEAR</button>
               </div>
@@ -105,9 +105,9 @@ export async function renderCustomSkin(container) {
             </div>
 
             <div class="card" style="padding: 16px; background-color: var(--bg-card);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
                 <span style="font-family: var(--font-pixel); font-size: 24px; color: var(--text-primary);">BACKGROUND</span>
-                <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px; flex-shrink: 0;">
                   <input type="checkbox" id="toggleBg" style="opacity: 0; width: 0; height: 0;">
                   <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-color); border: 2px solid var(--border-color); border-radius: 12px; transition: .4s;">
                     <span class="slider-knob" style="position: absolute; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: var(--text-secondary); border-radius: 50%; transition: .4s;"></span>

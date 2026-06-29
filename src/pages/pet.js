@@ -105,9 +105,41 @@ export async function renderPet(container, petId) {
 
     // Render HTML structure
     container.innerHTML = `
+      <style>
+        .pet-modal-img-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: auto;
+          width: 100%;
+        }
+        .pet-modal-img {
+          max-width: 100%;
+          height: auto;
+          border: 2px solid var(--border-color);
+          border-radius: 6px;
+          display: block;
+        }
+        .historical-rundown-box {
+          max-width: 100%;
+          overflow: hidden;
+        }
+        @media (max-width: 768px) {
+          .pet-modal-img-container {
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            height: 60vh;
+          }
+          .pet-modal-img {
+            max-width: none !important;
+            width: auto !important;
+            height: 100% !important;
+          }
+        }
+      </style>
       <div class="stat-counter" style="text-align: left; margin-bottom: 24px;">
-        <h1 class="pixel-text" style="font-size: 32px; color: #ffffff;">SCOUTING REPORT: GIGLING #${cleanId}</h1>
-        <p style="font-family: var(--font-primary); font-size: 22px;">Owner: <a href="javascript:void(0)" onclick="history.pushState(null, '', '/player/${pet.ownerAddress}'); window.dispatchEvent(new Event('popstate'));" class="text-cyan" style="text-decoration: none;">${escapeHTML(pet.ownerAddress)}</a></p>
+        <h1 class="pixel-text" style="font-size: clamp(24px, 5vw, 32px); color: #ffffff;">SCOUTING REPORT: GIGLING #${cleanId}</h1>
+        <p style="font-family: var(--font-primary); font-size: clamp(16px, 4vw, 22px);">Owner: <a href="javascript:void(0)" onclick="history.pushState(null, '', '/player/${pet.ownerAddress}'); window.dispatchEvent(new Event('popstate'));" class="text-cyan" style="text-decoration: none;">${escapeHTML(pet.ownerAddress)}</a></p>
       </div>
       
       <div class="grid-2" style="margin-bottom: 32px; align-items: start;">
@@ -217,7 +249,7 @@ export async function renderPet(container, petId) {
       </div>
 
       <!-- Recent Races history table -->
-      <div class="pixel-box">
+      <div class="pixel-box historical-rundown-box">
         <div class="pixel-box-title">HISTORICAL RUNDOWN</div>
         <div class="table-container">
           ${recentRaces.length === 0 ? `
@@ -311,8 +343,8 @@ export async function renderPet(container, petId) {
               <button id="modalCloseBtn" class="btn btn-pixel" style="padding: 4px 12px; font-size: 20px;">X</button>
             </div>
             
-            <div style="display: flex; justify-content: center; align-items: center;">
-              <img id="modalPetImg" src="${PET_IMAGES[currentModalIndex]}" style="max-width: 100%; height: auto; border: 2px solid var(--border-color); border-radius: 6px;" alt="Pet Traits Info" />
+            <div class="pet-modal-img-container">
+              <img id="modalPetImg" class="pet-modal-img" src="${PET_IMAGES[currentModalIndex]}" alt="Pet Traits Info" />
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center;">

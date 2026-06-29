@@ -33,32 +33,71 @@ export async function renderHatching(container) {
   FACTIONS.forEach(f => { dustInfluences[f.id] = 0; });
 
   container.innerHTML = `
+    <style>
+      .faction-dust-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .hatch-header {
+        margin-bottom: 16px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        gap: 16px; 
+        border-bottom: 2px solid var(--border-color); 
+        padding-bottom: 12px;
+      }
+      @media (max-width: 768px) {
+        .faction-dust-grid {
+          grid-template-columns: 1fr;
+        }
+        .hatch-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .hatch-header-info {
+          align-self: flex-end;
+        }
+        .modal-img-container {
+          align-items: flex-start !important;
+          justify-content: flex-start !important;
+        }
+        .modal-img-content {
+          max-width: none !important;
+          max-height: none !important;
+          height: 100% !important;
+          width: auto !important;
+        }
+      }
+    </style>
     <!-- Top Compact Header Block -->
-    <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px;">
+    <div class="hatch-header">
       <div style="display: flex; align-items: center; gap: 16px;">
         <div style="flex-shrink: 0; width: 64px; height: 64px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden; background-color: var(--bg-card); display: flex; justify-content: center; align-items: center;">
           <img src="/egg/egg.png" style="width: 48px; height: 48px; object-fit: contain;" alt="Gigling Egg" />
         </div>
         <div>
-          <h1 class="pixel-text" style="font-size: 28px; color: #ffffff; margin: 0; line-height: 1.2;">EGG HATCHING SIMULATOR</h1>
-          <p style="margin: 0; font-size: 22px; color: var(--text-secondary);">Simulate timelines and optimize Faction Dust allocation.</p>
+          <h1 class="pixel-text" style="font-size: clamp(24px, 5vw, 28px); color: #ffffff; margin: 0; line-height: 1.2;">EGG HATCHING SIMULATOR</h1>
+          <p style="margin: 0; font-size: clamp(16px, 3.5vw, 22px); color: var(--text-secondary);">Simulate timelines and optimize Faction Dust allocation.</p>
         </div>
       </div>
-      <button id="hatchInfoBtn" class="btn-giga-gold" style="font-size: 18px; padding: 4px 16px; height: 38px;">INFO</button>
+      <button id="hatchInfoBtn" class="btn-giga-gold hatch-header-info" style="font-size: 18px; padding: 4px 16px; height: 38px; flex-shrink: 0;">INFO</button>
     </div>
 
     <!-- Simulator Body Layout: Tighter columns to avoid scrolling -->
-    <div class="grid-2" style="gap: 16px; align-items: start;">
+    <div class="grid-2" style="gap: 16px; align-items: start; width: 100%;">
       <!-- Left Column: Simulator Settings & Summary -->
-      <div class="pixel-box" style="padding: 16px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="pixel-box" style="padding: 16px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
         <div>
-          <div class="pixel-box-title">PROGRESS AND QUALITY SIMULATOR</div>
+          <div class="pixel-box-title" style="font-size: clamp(16px, 4vw, 20px);">PROGRESS AND QUALITY SIMULATOR</div>
           
           <!-- Presets with highly legible m5x7 typography, no emoticons -->
           <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
-            <button id="presetMax" class="btn btn-primary" style="font-size: 20px; padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">MAX (34d)</button>
-            <button id="presetMedium" class="btn" style="font-size: 20px; padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">BALANCED (50d)</button>
-            <button id="presetBudget" class="btn" style="font-size: 20px; padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">BUDGET (100d)</button>
+            <button id="presetMax" class="btn btn-primary" style="font-size: clamp(16px, 3.5vw, 20px); padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">MAX (34d)</button>
+            <button id="presetMedium" class="btn" style="font-size: clamp(16px, 3.5vw, 20px); padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">BALANCED (50d)</button>
+            <button id="presetBudget" class="btn" style="font-size: clamp(16px, 3.5vw, 20px); padding: 4px 12px; font-family: var(--font-primary); font-weight: normal; text-transform: uppercase;">BUDGET (100d)</button>
           </div>
 
           <!-- Custom sliders with larger margins & labels -->
@@ -149,12 +188,12 @@ export async function renderHatching(container) {
       </div>
 
       <!-- Right Column: Faction Dust Optimizer (Split in grid to save space) -->
-      <div class="pixel-box" style="padding: 16px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="pixel-box" style="padding: 16px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
         <div>
-          <div class="pixel-box-title">FACTION DUST OPTIMIZER</div>
+          <div class="pixel-box-title" style="font-size: clamp(16px, 4vw, 20px);">FACTION DUST OPTIMIZER</div>
           
           <!-- Grid of Dust controls to avoid height accumulation -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+          <div class="faction-dust-grid">
             ${FACTIONS.map(f => `
               <div style="display: flex; align-items: center; justify-content: space-between; background-color: var(--bg-card); padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap;">
@@ -543,8 +582,8 @@ export async function renderHatching(container) {
           <button id="modalCloseBtn" class="btn btn-pixel" style="padding: 2px 8px; font-size: 16px;">X</button>
         </div>
         
-        <div style="display: flex; justify-content: center; align-items: center; height: 560px; background-color: var(--bg-color); border: 2px solid var(--border-color); border-radius: 6px; overflow: hidden; position: relative;">
-          <img id="modalEggImg" src="${EGG_IMAGES[currentModalIndex]}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Egg Intel Slide" />
+        <div class="modal-img-container" style="display: flex; justify-content: center; align-items: center; height: 60vh; max-height: 560px; min-height: 300px; background-color: var(--bg-color); border: 2px solid var(--border-color); border-radius: 6px; overflow: auto; position: relative;">
+          <img id="modalEggImg" class="modal-img-content" src="${EGG_IMAGES[currentModalIndex]}" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;" alt="Egg Intel Slide" />
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center;">

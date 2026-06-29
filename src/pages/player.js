@@ -153,9 +153,76 @@ export async function renderPlayer(container, address) {
     const lifetimeCreatorFees = creator ? (parseFloat(creator.lifetimeAccruedWei) / 1e18).toFixed(5) : '0.00000';
 
     container.innerHTML = `
+      <style>
+        .player-table-box {
+          max-width: 100%;
+          overflow: hidden;
+        }
+        .pet-card-content {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+        }
+        .pet-img-box {
+          width: 70px;
+          height: 70px;
+          background-color: var(--bg-color);
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .pet-card-info-text {
+          font-size: 18px;
+          font-family: var(--font-primary);
+          color: var(--text-secondary);
+          margin-bottom: 4px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex-wrap: wrap;
+        }
+        .pet-card-h4 {
+          font-size: 24px;
+          margin-bottom: 2px;
+        }
+        .pet-card-stats {
+          font-family: var(--font-primary);
+          font-size: 18px;
+        }
+        @media (max-width: 768px) {
+          #playerPetsGrid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .pet-card-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+          }
+          .pet-img-box {
+            width: 60px;
+            height: 60px;
+          }
+          .pet-card-info-text {
+            font-size: 14px !important;
+            justify-content: center;
+          }
+          .pet-card-h4 {
+            font-size: 20px !important;
+          }
+          .pet-card-stats {
+            font-size: 14px !important;
+          }
+        }
+      </style>
       <div class="stat-counter" style="text-align: left; margin-bottom: 24px;">
-        <h1 class="pixel-text" style="font-size: 32px; color: #ffffff;">PLAYER HISTORY REPORT</h1>
-        <p style="font-family: var(--font-primary); font-size: 18px; word-break: break-all;">Target Wallet: <span class="text-cyan">${cleanAddress}</span></p>
+        <h1 class="pixel-text" style="font-size: clamp(24px, 5vw, 32px); color: #ffffff;">PLAYER HISTORY REPORT</h1>
+        <p style="font-family: var(--font-primary); font-size: clamp(14px, 3.5vw, 18px); word-break: break-all;">Target Wallet: <span class="text-cyan">${cleanAddress}</span></p>
       </div>
 
       <!-- Grid Cards -->
@@ -198,7 +265,7 @@ export async function renderPlayer(container, address) {
           </div>
         ` : `
           <div class="grid-3" id="playerPetsGrid">
-            ${petsDetails.map(pet => {
+            ${petsDetails.map((pet, index) => {
       const stats = financialStatsMap.get(pet.id) || {};
       const petWins = stats.wins || 0;
       const petRaces = stats.totalRaces || 0;
@@ -211,14 +278,14 @@ export async function renderPlayer(container, address) {
       const factionName = pet.factionName || 'None';
 
       return `
-                <div class="card clickable" onclick="history.pushState(null, '', '/pet/${pet.id}'); window.dispatchEvent(new Event('popstate'));" style="border-color: ${rarityColor};">
-                  <div style="display: flex; gap: 12px;">
-                    <div style="width: 70px; height: 70px; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div class="card clickable player-pet-row" onclick="history.pushState(null, '', '/pet/${pet.id}'); window.dispatchEvent(new Event('popstate'));" style="border-color: ${rarityColor}; display: ${index < 6 ? 'block' : 'none'};">
+                  <div class="pet-card-content">
+                    <div class="pet-img-box">
                       <img src="${escapeHTML(pet.imgUrl)}" style="width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated;" />
                     </div>
                     <div style="flex-grow: 1;">
-                      <h4 class="pixel-text" style="font-size: 24px; margin-bottom: 2px;">#${pet.id}</h4>
-                      <div style="font-size: 18px; font-family: var(--font-primary); color: var(--text-secondary); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                      <h4 class="pixel-text pet-card-h4">#${pet.id}</h4>
+                      <div class="pet-card-info-text">
                         <span style="color: ${rarityColor}; font-weight: bold;">${rarityName}</span>
                         <span>|</span>
                         <span style="display: inline-flex; align-items: center; gap: 4px; vertical-align: middle;">
@@ -226,10 +293,10 @@ export async function renderPlayer(container, address) {
                           ${factionName}
                         </span>
                       </div>
-                      <div style="font-family: var(--font-primary); font-size: 18px;">
+                      <div class="pet-card-stats">
                         ELO: <span class="text-cyan">${eloVal}</span> | Wins: ${petWins}/${petRaces}
                       </div>
-                      <div style="font-family: var(--font-primary); font-size: 18px; margin-top: 4px;">
+                      <div class="pet-card-stats" style="margin-top: 4px;">
                         P&L: <span class="${petNetEth >= 0 ? 'text-green' : 'text-pink'}">${petNetEth >= 0 ? '+' : ''}${petNetEth.toFixed(4)} ETH</span>
                       </div>
                     </div>
@@ -238,11 +305,18 @@ export async function renderPlayer(container, address) {
               `;
     }).join('')}
           </div>
+          ${petsDetails.length > 6 ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-color);">
+              <button id="playerPetsPrev" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;" disabled>PREV</button>
+              <span id="playerPetsPage" class="pixel-text" style="font-size: 18px; color: var(--text-secondary);">Page 1 of ${Math.ceil(petsDetails.length / 6)}</span>
+              <button id="playerPetsNext" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;">NEXT</button>
+            </div>
+          ` : ''}
         `}
       </div>
 
       <!-- Recent Racing Activity -->
-      <div class="pixel-box">
+      <div class="pixel-box player-table-box">
         <div class="pixel-box-title">RECENT RACING ACTIVITY LOG</div>
         <div id="playerRacesTable" class="table-container">
           ${races.length === 0 ? `
@@ -298,19 +372,19 @@ export async function renderPlayer(container, address) {
     }).join('')}
               </tbody>
             </table>
-            ${races.length > 10 ? `
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-                <button id="playerRacesPrev" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;" disabled>PREV</button>
-                <span id="playerRacesPage" class="pixel-text" style="font-size: 18px; color: var(--text-secondary);">Page 1 of ${Math.ceil(races.length / 10)}</span>
-                <button id="playerRacesNext" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;">NEXT</button>
-              </div>
-            ` : ''}
-          `}
-        </div>
+          </div>
+          ${races.length > 10 ? `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+              <button id="playerRacesPrev" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;" disabled>PREV</button>
+              <span id="playerRacesPage" class="pixel-text" style="font-size: 18px; color: var(--text-secondary);">Page 1 of ${Math.ceil(races.length / 10)}</span>
+              <button id="playerRacesNext" class="btn btn-pixel" style="font-size: 16px; padding: 4px 12px;">NEXT</button>
+            </div>
+          ` : ''}
+        `}
       </div>
     `;
 
-    // Setup pagination logic
+    // Setup pagination logic for Races
     if (races.length > 10) {
       const btnPrev = document.getElementById('playerRacesPrev');
       const btnNext = document.getElementById('playerRacesNext');
@@ -322,6 +396,40 @@ export async function renderPlayer(container, address) {
       const updatePagination = () => {
         rows.forEach((row, i) => {
           row.style.display = (i >= currentPage * 10 && i < (currentPage + 1) * 10) ? 'table-row' : 'none';
+        });
+        pageLabel.textContent = `Page ${currentPage + 1} of ${totalPages}`;
+        btnPrev.disabled = currentPage === 0;
+        btnNext.disabled = currentPage === totalPages - 1;
+      };
+
+      if (btnPrev && btnNext) {
+        btnPrev.addEventListener('click', () => {
+          if (currentPage > 0) {
+            currentPage--;
+            updatePagination();
+          }
+        });
+        btnNext.addEventListener('click', () => {
+          if (currentPage < totalPages - 1) {
+            currentPage++;
+            updatePagination();
+          }
+        });
+      }
+    }
+
+    // Setup pagination logic for Pets
+    if (petsDetails.length > 6) {
+      const btnPrev = document.getElementById('playerPetsPrev');
+      const btnNext = document.getElementById('playerPetsNext');
+      const pageLabel = document.getElementById('playerPetsPage');
+      const rows = document.querySelectorAll('.player-pet-row');
+      let currentPage = 0;
+      const totalPages = Math.ceil(petsDetails.length / 6);
+
+      const updatePagination = () => {
+        rows.forEach((row, i) => {
+          row.style.display = (i >= currentPage * 6 && i < (currentPage + 1) * 6) ? 'block' : 'none';
         });
         pageLabel.textContent = `Page ${currentPage + 1} of ${totalPages}`;
         btnPrev.disabled = currentPage === 0;

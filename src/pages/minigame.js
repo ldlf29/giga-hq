@@ -2,12 +2,45 @@
 
 export async function renderMinigame(container) {
   container.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+    <style>
+      .mg-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+      }
+      .mg-canvas-box {
+        padding: 0; 
+        overflow: hidden; 
+        margin-bottom: 0; 
+        position: relative; 
+        width: 100%; 
+        max-width: 900px;
+      }
+      @media (max-width: 768px) {
+        #viewContainer {
+          padding: 0 !important;
+        }
+        .mg-wrapper {
+          padding: 16px 0;
+        }
+        .mg-canvas-box {
+          border-radius: 0;
+          border-left: none;
+          border-right: none;
+        }
+        .mg-header {
+          padding: 0 16px;
+        }
+      }
+    </style>
+    <div class="mg-wrapper">
       <!-- Header -->
-      <div style="display: flex; align-items: center; gap: 16px; width: 100%; max-width: 900px; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 24px;">
-          <span style="font-size: 22px; color: var(--text-secondary);">SCORE: <span id="mgScore" class="text-cyan" style="font-weight: bold;">0</span></span>
-          <span style="font-size: 22px; color: var(--text-secondary);">BEST: <span id="mgBest" class="text-yellow" style="font-weight: bold;">0</span></span>
+      <div class="mg-header" style="display: flex; align-items: center; gap: 16px; width: 100%; max-width: 900px; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <span style="font-size: clamp(18px, 4vw, 22px); color: var(--text-secondary);">SCORE: <span id="mgScore" class="text-cyan" style="font-weight: bold;">0</span></span>
+          <span style="font-size: clamp(18px, 4vw, 22px); color: var(--text-secondary);">BEST: <span id="mgBest" class="text-yellow" style="font-weight: bold;">0</span></span>
         </div>
         <button id="mgSoundBtn" style="background: transparent; border: none; cursor: pointer; color: white; display: flex; align-items: center; padding: 4px;" title="Toggle Sound">
           <svg id="mgSoundIconOn" style="display: none;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
@@ -16,24 +49,24 @@ export async function renderMinigame(container) {
       </div>
 
       <!-- Canvas wrapper -->
-      <div class="pixel-box" style="padding: 0; overflow: hidden; margin-bottom: 0; position: relative; width: 100%; max-width: 900px;">
+      <div class="pixel-box mg-canvas-box">
         <canvas id="mgCanvas" style="display: block; width: 100%; image-rendering: pixelated;"></canvas>
         <!-- Overlays -->
         <div id="mgOverlayStart" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: rgba(4, 7, 10, 0.85); z-index: 10;">
-          <h2 class="pixel-text text-cyan" style="font-size: 36px; margin-bottom: 12px;">GIGLING RUNNER</h2>
-          <p style="font-size: 22px; color: var(--text-secondary); margin-bottom: 24px; text-align: center; max-width: 400px;">Dodge the orbs! Press SPACE or TAP to jump. Double-jump to reach higher!</p>
-          <button id="mgStartBtn" class="btn-giga-gold" style="font-size: 22px; padding: 8px 32px;">START</button>
+          <h2 class="pixel-text text-cyan" style="font-size: clamp(28px, 6vw, 36px); margin-bottom: 12px; text-align: center;">GIGLING RUNNER</h2>
+          <p style="font-size: clamp(16px, 3.5vw, 22px); color: var(--text-secondary); margin-bottom: 24px; text-align: center; max-width: 400px; padding: 0 16px;">Dodge the orbs! Press SPACE or TAP to jump. Double-jump to reach higher!</p>
+          <button id="mgStartBtn" class="btn-giga-gold" style="font-size: clamp(18px, 4vw, 22px); padding: 8px 32px;">START</button>
         </div>
         <div id="mgOverlayDead" style="position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: center; background-color: rgba(4, 7, 10, 0.85); z-index: 10;">
-          <h2 class="pixel-text text-pink" style="font-size: 36px; margin-bottom: 8px;">GAME OVER</h2>
-          <p style="font-size: 24px; color: var(--text-secondary); margin-bottom: 6px;">Score: <span id="mgDeadScore" class="text-cyan" style="font-weight: bold;">0</span></p>
-          <p style="font-size: 20px; color: var(--text-muted); margin-bottom: 20px;">Best: <span id="mgDeadBest" class="text-yellow" style="font-weight: bold;">0</span></p>
-          <button id="mgRetryBtn" class="btn-giga-gold" style="font-size: 22px; padding: 8px 32px;">RETRY</button>
+          <h2 class="pixel-text text-pink" style="font-size: clamp(28px, 6vw, 36px); margin-bottom: 8px; text-align: center;">GAME OVER</h2>
+          <p style="font-size: clamp(20px, 4vw, 24px); color: var(--text-secondary); margin-bottom: 6px;">Score: <span id="mgDeadScore" class="text-cyan" style="font-weight: bold;">0</span></p>
+          <p style="font-size: clamp(16px, 3.5vw, 20px); color: var(--text-muted); margin-bottom: 20px;">Best: <span id="mgDeadBest" class="text-yellow" style="font-weight: bold;">0</span></p>
+          <button id="mgRetryBtn" class="btn-giga-gold" style="font-size: clamp(18px, 4vw, 22px); padding: 8px 32px;">RETRY</button>
         </div>
       </div>
 
       <!-- Controls hint -->
-      <div style="display: flex; gap: 24px; font-size: 20px; color: var(--text-muted);">
+      <div style="display: flex; gap: 24px; font-size: clamp(16px, 3.5vw, 20px); color: var(--text-muted); text-align: center; padding: 0 16px; flex-wrap: wrap; justify-content: center;">
         <span>SPACE / TAP — Jump</span>
         <span>Double press — Double Jump</span>
       </div>

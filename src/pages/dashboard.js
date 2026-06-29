@@ -3,12 +3,35 @@ import { getGlobalStats, getLeaderboard, getRecentRaces, escapeHTML } from '../a
 
 export async function renderDashboard(container) {
   container.innerHTML = `
+    <style>
+      .dash-search-container {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+        max-width: 500px;
+      }
+      .dash-search-input {
+        flex: 1;
+        min-width: 0;
+      }
+      .dash-grid-child {
+        min-width: 0;
+      }
+      @media (max-width: 768px) {
+        .dash-search-container {
+          flex-direction: column;
+        }
+        .dash-search-input, .dash-search-btn {
+          width: 100% !important;
+        }
+      }
+    </style>
     <div class="stat-counter" style="margin-bottom: 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-      <h1 class="pixel-text" style="font-size: 40px; color: #ffffff; margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
-      <p style="margin-bottom: 24px; font-family: monospace; font-size: 16px; color: var(--text-secondary);">Search for a player wallet or pet ID to view detailed racing statistics.</p>
-      <div style="display: flex; gap: 10px;">
-         <input type="text" id="dashboardSearch" class="input-field input-pixel" style="height: 48px; padding: 4px 16px; font-size: 20px; width: 350px;" placeholder="Search player/pet..." />
-         <button id="dashboardSearchBtn" class="btn btn-pixel" style="padding: 4px 24px; font-size: 20px; height: 48px;">SEARCH</button>
+      <h1 class="pixel-text" style="font-size: clamp(28px, 6vw, 40px); color: #ffffff; margin-bottom: 10px;">GIGLING RACING ANALYTICS</h1>
+      <p style="margin-bottom: 24px; font-family: monospace; font-size: clamp(14px, 3.5vw, 16px); color: var(--text-secondary); padding: 0 16px;">Search for a player wallet or pet ID to view detailed racing statistics.</p>
+      <div class="dash-search-container">
+         <input type="text" id="dashboardSearch" class="input-field input-pixel dash-search-input" style="height: 48px; padding: 4px 16px; font-size: 20px;" placeholder="Search player/pet..." />
+         <button id="dashboardSearchBtn" class="btn btn-pixel dash-search-btn" style="padding: 4px 24px; font-size: 20px; height: 48px;">SEARCH</button>
       </div>
     </div>
 
@@ -26,7 +49,7 @@ export async function renderDashboard(container) {
 
     <div class="grid-2">
       <!-- ELO Leaderboard -->
-      <div>
+      <div class="dash-grid-child">
         <div class="stat-counter" style="text-align: left; margin-bottom: 16px;">
           <h2 class="pixel-text text-yellow" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">TOP GIGLINGS</h2>
         </div>
@@ -36,7 +59,7 @@ export async function renderDashboard(container) {
       </div>
       
       <!-- Recent Races -->
-      <div>
+      <div class="dash-grid-child">
         <div class="stat-counter" style="text-align: left; margin-bottom: 16px;">
           <h2 class="pixel-text text-cyan" style="font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">RECENT RACES</h2>
         </div>
