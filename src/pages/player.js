@@ -196,27 +196,34 @@ export async function renderPlayer(container, address) {
         @media (max-width: 768px) {
           #playerPetsGrid {
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 12px !important;
+            gap: 8px !important;
+          }
+          .player-pet-row {
+            padding: 10px !important;
           }
           .pet-card-content {
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 8px;
+            gap: 4px;
           }
           .pet-img-box {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
           }
           .pet-card-info-text {
-            font-size: 14px !important;
+            font-size: 12px !important;
             justify-content: center;
+            margin-bottom: 2px !important;
           }
           .pet-card-h4 {
-            font-size: 20px !important;
+            font-size: 16px !important;
+            margin-bottom: 0 !important;
           }
           .pet-card-stats {
-            font-size: 14px !important;
+            font-size: 12px !important;
+            line-height: 1.2;
+            margin-top: 0 !important;
           }
         }
       </style>
