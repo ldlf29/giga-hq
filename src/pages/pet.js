@@ -228,8 +228,8 @@ export async function renderPet(container, petId) {
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 ${racePub.traits.map(t => `
                   <div class="badge" style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 12px;">
-                    <span style="font-family: var(--font-primary); font-size: 20px; color: var(--text-primary); margin-right: 6px;">${escapeHTML(t.name)}</span>
-                    <span class="text-yellow" style="font-family: var(--font-primary); font-size: 16px; font-weight: bold;">Tier ${t.tier}</span>
+                    <span style="font-family: var(--font-primary); font-size: 20px; color: var(--text-primary); ${t.tier ? 'margin-right: 6px;' : ''}">${escapeHTML(t.name || 'Unknown')}</span>
+                    ${t.tier ? `<span class="text-yellow" style="font-family: var(--font-primary); font-size: 16px; font-weight: bold;">Tier ${t.tier}</span>` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -405,6 +405,20 @@ export async function renderPet(container, petId) {
  * Render a customized stat progress bar with reveals indicators and possible range
  */
 function renderStatBar(name, rangeObj, reveals) {
+  if (!rangeObj || reveals === 0) {
+    return `
+      <div class="stat-bar-container">
+        <div class="stat-bar-header" style="align-items: center; margin-bottom: 6px;">
+          <span style="font-family: var(--font-primary); font-size: 24px; font-weight: bold; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">${name}</span>
+          <span style="font-family: var(--font-primary); font-size: 20px; color: var(--text-secondary);">0 <span class="text-muted" style="font-size: 15px;">(0/12 reveals)</span></span>
+        </div>
+        <div class="stat-bar-outer">
+          <div class="stat-bar-inner" style="width: 0%;"></div>
+        </div>
+      </div>
+    `;
+  }
+
   const min = rangeObj ? rangeObj.min || 0 : 0;
   const max = rangeObj ? rangeObj.max || 0 : 100;
   const isFullyRevealed = min === max;
